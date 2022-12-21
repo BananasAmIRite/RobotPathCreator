@@ -23,7 +23,7 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.0.1-jre'
 
-    compile group: 'org.ejml', name: 'ejml-all', version: '0.41'
+    compileOnly group: 'org.ejml', name: 'simple', version: '0.30'
 }
 
 application {

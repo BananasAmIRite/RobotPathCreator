@@ -3,12 +3,16 @@
  */
 package robotpathcreator;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import javax.swing.*;
 
+public class App {
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {}
+        RobotPathCreator creator = new RobotPathCreator();
+        creator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        creator.setSize(800, 500);
+        creator.setVisible(true);
     }
 }

@@ -1,9 +1,11 @@
-package robotpathcreator; 
+package robotpathcreator;
+
+import org.ejml.simple.SimpleMatrix;
 
 public class Path {
 
-    private double[] xCoeffs; 
-    private double[] yCoeffs; 
+    private final double[] xCoeffs;
+    private final double[] yCoeffs;
 
     public Path(PathPoint a, PathPoint b) {
         this.xCoeffs = calculateCoeffs(
@@ -40,7 +42,7 @@ public class Path {
         ]
          */
 
-         SimpleMatrix coeffsMat = new SimpleMatrix(new double[] {
+         SimpleMatrix coeffsMat = new SimpleMatrix(new double[][] {
             new double[] {0, 0, 0, 0, 0, 1}, 
             new double[] {Math.pow(time, 5), Math.pow(time, 4), Math.pow(time, 3), Math.pow(time, 2), time, 1}, 
             new double[] {0, 0, 0, 0, 1, 0}, 
@@ -49,7 +51,7 @@ public class Path {
             new double[] {60*Math.pow(time, 2), 24 * time, 6, 0, 0, 0} 
          }); 
 
-         SimpleMatrix answMat = new SimpleMatrix(new double[] {
+         SimpleMatrix answMat = new SimpleMatrix(new double[][] {
             new double[] {p0}, 
             new double[] {p1}, 
             new double[] {v0}, 
