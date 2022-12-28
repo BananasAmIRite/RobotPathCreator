@@ -1,11 +1,11 @@
 package robotpathcreator.renderer;
 
 import robotpathcreator.PathPoint;
+import robotpathcreator.RobotPathCreator;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 public class PathPointsEditor extends JPanel {
     private PathPoint currentPoint;
@@ -17,8 +17,17 @@ public class PathPointsEditor extends JPanel {
     private final JTextField velocityField = new JTextField();
     private final JTextField angleField = new JTextField();
 
-    public PathPointsEditor() {
+    private final RobotPathCreator pathCreator;
+
+    public PathPointsEditor(RobotPathCreator pathCreator) {
+        this.pathCreator = pathCreator;
         setLayout(new GridLayout(0, 2));
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                grabFocus();
+            }
+        });
     }
 
     public void rerender() {
@@ -48,7 +57,6 @@ public class PathPointsEditor extends JPanel {
 
         this.revalidate();
         this.repaint();
-
     }
 
     public void update() {
@@ -61,45 +69,53 @@ public class PathPointsEditor extends JPanel {
         this.velocityField.setText(Double.toString(currentPoint.getVelocity()));
         this.angleField.setText(Double.toString(Math.toDegrees(currentPoint.getAngle()))); // IMPORTANT: displayed is degrees, stored is radians
 
+        this.pathCreator.getDisplay().update();
+
     }
 
     public void setCurrentPoint(PathPoint point) {
         this.currentPoint = point;
 
         this.rerender();
-        this.nameField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+        this.nameField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
                 point.setName(nameField.getText());
             }
         });
 
-        this.posXField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+        this.posXField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
                 point.setX(Double.parseDouble(posXField.getText()));
             }
         });
 
-        this.posYField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+        this.posYField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
                 point.setY(Double.parseDouble(posYField.getText()));
             }
         });
 
-        this.timeField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+        this.timeField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
                 point.setTravelTime(Double.parseDouble(timeField.getText()));
             }
         });
 
-        this.velocityField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+        this.velocityField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
                 point.setVelocity(Double.parseDouble(velocityField.getText()));
             }
         });
 
-        this.angleField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                point.setAngle(Math.toRadians(Double.parseDouble(velocityField.getText())));
+        this.angleField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                point.setAngle(Math.toRadians(Double.parseDouble(angleField.getText())));
             }
         });
     }

@@ -2,12 +2,23 @@ package robotpathcreator;
 
 import org.ejml.simple.SimpleMatrix;
 
+import java.util.Arrays;
+import java.util.function.DoubleBinaryOperator;
+import java.util.function.DoubleFunction;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+
 public class Path {
 
     private final double[] xCoeffs;
     private final double[] yCoeffs;
 
+    private final PathPoint startPoint;
+    private final PathPoint endPoint;
+
     public Path(PathPoint a, PathPoint b) {
+        this.startPoint = a;
+        this.endPoint = b;
         this.xCoeffs = calculateCoeffs(
             a.getTravelTime(), 
             a.getX(), 
@@ -69,5 +80,25 @@ public class Path {
             solutions.get(4, 0), 
             solutions.get(5, 0)
         }; 
+    }
+
+    public PathPoint getStartPoint() {
+        return startPoint;
+    }
+
+    public PathPoint getEndPoint() {
+        return endPoint;
+    }
+
+
+    public double getTravelTime() {
+        return startPoint.getTravelTime();
+    }
+
+    public Coordinate<Double> getPointAt(double time) {
+        return new Coordinate<>(
+                IntStream.range(0, xCoeffs.length).asDoubleStream().reduce(0, (a, i) -> a + xCoeffs[(int) i] * Math.pow(time, xCoeffs.length - i - 1)),
+                IntStream.range(0, yCoeffs.length).asDoubleStream().reduce(0, (a, i) -> a + yCoeffs[(int) i] * Math.pow(time, yCoeffs.length - i - 1))
+        );
     }
 }

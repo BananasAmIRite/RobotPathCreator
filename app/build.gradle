@@ -23,10 +23,20 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.0.1-jre'
 
-    compileOnly group: 'org.ejml', name: 'simple', version: '0.30'
+    implementation group: 'org.ejml', name: 'simple', version: '0.30'
 }
 
 application {
     // Define the main class for the application.
     mainClass = 'robotpathcreator.App'
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "robotpathcreator.App"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }

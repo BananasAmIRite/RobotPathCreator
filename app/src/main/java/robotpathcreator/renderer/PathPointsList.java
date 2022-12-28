@@ -29,4 +29,8 @@ public class PathPointsList extends JList<PathPoint> {
         this.trajectory = trajectory;
         this.setModel(getPoints());
     }
+
+    public RobotTrajectory getTrajectory() {
+        return trajectory;
+    }
 }

@@ -4,8 +4,7 @@ import robotpathcreator.renderer.PathPointsEditor;
 
 public class PathPoint {
     private String name; 
-    private double x; 
-    private double y; 
+    private Coordinate<Double> position;
     private double angle; 
     private double velocity; 
     private double travelTime; // time to travel from this point to the next
@@ -18,8 +17,7 @@ public class PathPoint {
 
     public PathPoint(RobotPathCreator pathCreator, String name, double x, double y, double angle, double velocity, double travelTime) {
         this.name = name; 
-        this.x = x; 
-        this.y = y; 
+        this.position = new Coordinate<>(x, y);
         this.angle = angle; 
         this.velocity = velocity; 
         this.travelTime = travelTime;
@@ -45,20 +43,20 @@ public class PathPoint {
     } 
 
     public double getX() {
-        return x; 
+        return this.position.getX();
     }
 
     public void setX(double x) {
-        this.x = x;
+        this.position = new Coordinate<>(x, this.position.getY());
         if (pathCreator.getEditor().getCurrentPoint() == this) pathCreator.getEditor().update();
     }
 
     public double getY() {
-        return y; 
+        return this.position.getY();
     }
 
     public void setY(double y) {
-        this.y = y;
+        this.position = new Coordinate<>(this.position.getX(), y);
         if (pathCreator.getEditor().getCurrentPoint() == this) pathCreator.getEditor().update();
     } 
 
@@ -78,6 +76,22 @@ public class PathPoint {
     public void setVelocity(double velocity) {
         this.velocity = velocity;
         if (pathCreator.getEditor().getCurrentPoint() == this) pathCreator.getEditor().update();
+    }
+
+    public double getVelocityTranslationX() {
+        return this.velocity * Math.cos(this.angle);
+    }
+
+    public double getVelocityTranslationY() {
+        return this.velocity * Math.sin(this.angle);
+    }
+
+    public Coordinate<Double> getVelocityCoordinates() {
+        return new Coordinate<>(getX() + getVelocityTranslationX(), getY() + getVelocityTranslationY());
+    }
+
+    public Coordinate<Double> getPosition() {
+        return this.position;
     }
 
     @Override

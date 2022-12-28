@@ -2,6 +2,7 @@ package robotpathcreator;
 
 import robotpathcreator.renderer.PathPointsEditor;
 import robotpathcreator.renderer.PathPointsList;
+import robotpathcreator.renderer.PathsDisplay;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -10,8 +11,9 @@ import java.io.File;
 
 public class RobotPathCreator extends JFrame {
 
-    private final PathPointsEditor editor = new PathPointsEditor();
+    private final PathPointsEditor editor = new PathPointsEditor(this);
     private final PathPointsList list = new PathPointsList(this);
+    private final PathsDisplay display = new PathsDisplay(this.list);
 
     public RobotPathCreator() {
         list.addListSelectionListener(e -> {
@@ -56,12 +58,23 @@ public class RobotPathCreator extends JFrame {
         t.add(add);
 
         setJMenuBar(t);
-        getContentPane().setLayout(new GridLayout(1, 2));
-        getContentPane().add(list);
-        getContentPane().add(editor);
+        JPanel controls = new JPanel();
+        controls.setLayout(new GridLayout(1, 2));
+        controls.add(list);
+        controls.add(editor);
+
+
+        JSplitPane ui = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.display, controls);
+        setContentPane(ui);
+        ui.setResizeWeight(0.75);
+        pack();
     }
 
     public PathPointsEditor getEditor() {
         return editor;
+    }
+
+    public PathsDisplay getDisplay() {
+        return display;
     }
 }

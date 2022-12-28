@@ -29,7 +29,7 @@ public class RobotTrajectory {
         this.points.addElement(new PathPoint(pathCreator, name, x, y, angle, velocity, travelTime));
     }
 
-    public List<Path> calculatePath() {
+    public List<Path> calculateTrajectory() {
         List<Path> paths = new ArrayList<>(); 
         for (int i = 0; i < points.size() - 1; i++) {
             paths.add(new Path(points.get(i), points.get(i+1))); 
