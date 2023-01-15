@@ -16,6 +16,16 @@ public class RobotPathCreator extends JFrame {
     private final PathsDisplay display = new PathsDisplay(this.list);
 
     public RobotPathCreator() {
+
+        BufferedImage image = ImageIO.read(new File(FieldImage.class.getResource("/field_image.png"))); 
+
+        FieldImage fImage = new FieldImage(image, 
+            pixelsPerMeter, 
+            image.getWidth(), image.getHeight(), 
+            originX, originY
+        ); 
+        display.setFieldImage(fImage); 
+
         list.addListSelectionListener(e -> {
             this.editor.setCurrentPoint(list.getSelectedValue());
             this.getContentPane().repaint();

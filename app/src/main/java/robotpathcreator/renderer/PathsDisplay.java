@@ -13,6 +13,8 @@ public class PathsDisplay extends Canvas {
     private double zoom = 10;
     private final int nodeRadius = 5;
 
+    private FieldImage fieldImage; 
+
     private PathPointsList paths;
 
     private final PathInteractionListener listener = new PathInteractionListener(this);
@@ -58,6 +60,14 @@ public class PathsDisplay extends Canvas {
     public void draw(Graphics2D g) {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, getImageWidth(), getImageHeight());
+
+        if (this.fieldImage != null) {
+            Coordinate<Integer> renderStart = this.fieldImage.getRenderStartCoordinates(this.zoom);
+            Dimension dimensions = this.fieldImage.getImageDimensions(this.zoom);
+
+            g.drawImage(renderStart.getX(), renderStart.getY(), dimensions.getWidth(), dimensions.getHeight());  
+        }
+
         if (this.paths == null) return;
 
         List<Path> trajectory = this.paths.getTrajectory().calculateTrajectory();
@@ -125,5 +135,9 @@ public class PathsDisplay extends Canvas {
 
     public double fromCanvasValueY(double val) {
         return -val / this.zoom;
+    }
+
+    public void setFieldImage(FieldImage image) {
+        this.fieldImage = image; 
     }
 }
