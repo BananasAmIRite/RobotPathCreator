@@ -13,7 +13,8 @@ plugins {
 
 repositories {
     // Use Maven Central for resolving dependencies.
-    mavenCentral()
+    mavenCentral() 
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -24,6 +25,8 @@ dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
 
     implementation group: 'org.ejml', name: 'simple', version: '0.30'
+
+    implementation 'com.github.BananasAmIRite:RobotMotionProfile:new-system-SNAPSHOT'
 }
 
 application {

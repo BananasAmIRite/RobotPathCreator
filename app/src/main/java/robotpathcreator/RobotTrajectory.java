@@ -12,8 +12,8 @@ public class RobotTrajectory {
 
     public RobotTrajectory(RobotPathCreator pathCreator) {
         this.pathCreator = pathCreator;
-        this.addPoint("Point 1", 0,0, 0, 10, 5);
-        this.addPoint("Point 2", 5,4, 0, 10, 1);
+        this.addPoint(new SplinePathPoint("Point 1", 0,0, 0, 10, 5));
+        this.addPoint(new CommandPathPoint("Point 2", 5, 4, 0, 10, 1, "CoolCommand"));
     }
 
     private RobotTrajectory(RobotPathCreator pathCreator, List<PathPoint> points) {
@@ -25,9 +25,9 @@ public class RobotTrajectory {
         this.points.addElement(p);
     }
 
-    public void addPoint(String name, double x, double y, double angle, double velocity, double travelTime) {
-        this.points.addElement(new PathPoint(pathCreator, name, x, y, angle, velocity, travelTime));
-    }
+    // public void addPoint(String name, double x, double y, double angle, double velocity, double travelTime) {
+    //     this.points.addElement(new SplinePathPoint(name, x, y, angle, velocity, travelTime));
+    // }
 
     public List<Path> calculateTrajectory() {
         List<Path> paths = new ArrayList<>(); 
