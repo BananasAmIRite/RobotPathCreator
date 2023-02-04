@@ -1,8 +1,8 @@
-package robotpathcreator.renderer;
+package robotpathcreator.renderer.listener;
 
-import org.checkerframework.checker.units.qual.C;
-import robotpathcreator.Coordinate;
-import robotpathcreator.PathPoint;
+import robotpathcreator.data.Coordinate;
+import robotpathcreator.data.PathPoint;
+import robotpathcreator.renderer.PathsDisplay;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -27,16 +27,22 @@ public class PathInteractionListener  extends MouseDragListener implements Mouse
     @Override
     public void mousePressed(MouseEvent e) {
         if (this.display.getPathsList().getSelectedValue() != null) {
-            Coordinate<Integer> cnvPos = display.toCanvasCoords(this.display.getPathsList().getSelectedValue().getVelocityCoordinates());
+            Coordinate<Integer> cnvPos = display.toCanvasCoords(this.display.getPathsList().getSelectedValue().getWeightCoordinates());
             if (isInRange(e.getX(), e.getY(), cnvPos.getX(), cnvPos.getY(), display.getNodeRadius())) {
                 this.controllingElement = new ControllingElement(ElementType.VELOCITY, this.display.getPathsList().getSelectedValue());
+                display.update();
+                return;
+            }
+            Coordinate<Integer> canvasPosition = display.toCanvasCoords(this.display.getPathsList().getSelectedValue().getPosition());
+            if (isInRange(e.getX(), e.getY(), canvasPosition.getX(), canvasPosition.getY(), display.getNodeRadius())) {
+                this.controllingElement = new ControllingElement(ElementType.POINT, this.display.getPathsList().getSelectedValue());
                 display.update();
                 return;
             }
         }
 
         for (int i = 0; i < this.display.getPathsList().getPoints().size(); i++) {
-            PathPoint point = this.display.getPathsList().getPoints().elementAt(i);
+            PathPoint<?> point = this.display.getPathsList().getPoints().elementAt(i);
             Coordinate<Integer> canvasPosition = display.toCanvasCoords(point.getPosition());
             if (isInRange(e.getX(), e.getY(), canvasPosition.getX(), canvasPosition.getY(), display.getNodeRadius())) {
                 this.controllingElement = new ControllingElement(ElementType.POINT, point);
@@ -115,8 +121,9 @@ public class PathInteractionListener  extends MouseDragListener implements Mouse
             double deltaX = trajCoords.getX() - controllingElement.getPoint().getX();
             double deltaY = trajCoords.getY() - controllingElement.getPoint().getY();
             controllingElement.getPoint().setAngle(Math.atan2(deltaY, deltaX));
-            controllingElement.getPoint().setVelocity(Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2)));
+            controllingElement.getPoint().setWeight(Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2)));
         }
+        controllingElement.point.getEditorHandle().update();
         this.display.update();
     }
 
@@ -134,9 +141,9 @@ public class PathInteractionListener  extends MouseDragListener implements Mouse
 
     private static class ControllingElement {
         private final ElementType type;
-        private final PathPoint point;
+        private final PathPoint<?> point;
 
-        public ControllingElement(ElementType t, PathPoint p) {
+        public ControllingElement(ElementType t, PathPoint<?> p) {
             this.type = t;
             this.point = p;
         }
@@ -145,7 +152,7 @@ public class PathInteractionListener  extends MouseDragListener implements Mouse
             return type;
         }
 
-        public PathPoint getPoint() {
+        public PathPoint<?> getPoint() {
             return point;
         }
     }

@@ -2,8 +2,6 @@ package robotpathcreator;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 
 public abstract class Canvas extends JPanel {
@@ -35,7 +33,6 @@ public abstract class Canvas extends JPanel {
         super.paintComponent(g);
         this.setSize((int) this.getSize().getWidth(), (int) this.getSize().getHeight());
         Graphics2D graphics = (Graphics2D) image.getGraphics();
-        ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         this.draw(graphics);
         g.drawImage(image, 0, 0, null);

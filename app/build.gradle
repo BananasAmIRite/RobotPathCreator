@@ -13,7 +13,8 @@ plugins {
 
 repositories {
     // Use Maven Central for resolving dependencies.
-    mavenCentral()
+    mavenCentral() 
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -24,6 +25,10 @@ dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
 
     implementation group: 'org.ejml', name: 'simple', version: '0.30'
+
+    implementation 'com.github.BananasAmIRite:RobotMotionProfile:master-SNAPSHOT'
+//    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.1'
 }
 
 application {
@@ -32,6 +37,8 @@ application {
 }
 
 jar {
+
+    duplicatesStrategy = DuplicatesStrategy.WARN
     manifest {
         attributes "Main-Class": "robotpathcreator.App"
     }

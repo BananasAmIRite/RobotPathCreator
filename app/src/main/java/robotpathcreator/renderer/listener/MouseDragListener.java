@@ -1,4 +1,4 @@
-package robotpathcreator.renderer;
+package robotpathcreator.renderer.listener;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

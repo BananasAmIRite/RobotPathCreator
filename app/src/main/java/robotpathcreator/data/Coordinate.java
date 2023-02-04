@@ -1,4 +1,4 @@
-package robotpathcreator;
+package robotpathcreator.data;
 
 public class Coordinate<T extends Number> {
     private final T x;
