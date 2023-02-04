@@ -1,19 +1,12 @@
 package robotpathcreator.renderer;
 
 import org.bananasamirite.robotmotionprofile.TankMotionProfile;
-import org.bananasamirite.robotmotionprofile.data.waypoint.CommandWaypoint;
-import org.bananasamirite.robotmotionprofile.data.waypoint.SplineWaypoint;
-import robotpathcreator.CommandPathPoint;
-import robotpathcreator.PathPoint;
-import robotpathcreator.RobotPathCreator;
-import robotpathcreator.SplinePathPoint;
+import robotpathcreator.data.PathPoint;
 
 import javax.swing.*;
 
 public class PathPointsListEditor extends JPanel {
-    private PathPointsList list;
-
-    private RobotPathCreator creator;
+    private final PathPointsList list;
 
     private final JButton addSplinePoint = new JButton("Add Spline");
 
@@ -22,9 +15,8 @@ public class PathPointsListEditor extends JPanel {
     private final JButton upPoint = new JButton("Up");
     private final JButton downPoint = new JButton("Down");
 
-    public PathPointsListEditor(RobotPathCreator creator, PathPointsList list) {
+    public PathPointsListEditor(PathPointsList list) {
         this.list = list;
-        this.creator = creator;
         setupLayout();
     }
 

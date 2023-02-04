@@ -9,7 +9,7 @@ public class ConstraintsDialog extends JDialog {
     private final JTextField maxAccelField = new JTextField();
 
     public ConstraintsDialog(Frame owner, double maxVel, double maxAccel, Consumer<Double> setMaxVel, Consumer<Double> setMaxAccel) {
-        super(owner, "Constraints");
+        super(owner, "Constraints", true);
 
         GroupLayout layout = new GroupLayout(this.getContentPane());
         getContentPane().setLayout(layout);
@@ -33,9 +33,6 @@ public class ConstraintsDialog extends JDialog {
                         .addComponent(saveButton)
         );
 
-        setSize(250, 125);
-        setResizable(false);
-
         maxVelField.setText(Double.toString(maxVel));
         maxAccelField.setText(Double.toString(maxAccel));
         saveButton.addActionListener(e -> {
@@ -43,6 +40,11 @@ public class ConstraintsDialog extends JDialog {
             setMaxAccel.accept(Double.valueOf(maxAccelField.getText()));
             setVisible(false);
         });
+
+        setSize(250, 125);
+        setResizable(false);
+        pack();
+        setLocationRelativeTo(owner);
     }
 
 }

@@ -1,6 +1,6 @@
 package robotpathcreator.renderer;
 
-import robotpathcreator.PathPoint;
+import robotpathcreator.data.PathPoint;
 import robotpathcreator.RobotPathCreator;
 
 import javax.swing.*;
@@ -9,10 +9,7 @@ import java.awt.event.*;
 public class PathPointsEditor extends JPanel {
     private PathPoint<?> currentPoint;
 
-    private final RobotPathCreator pathCreator;
-
     public PathPointsEditor(RobotPathCreator pathCreator) {
-        this.pathCreator = pathCreator;
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -35,7 +32,6 @@ public class PathPointsEditor extends JPanel {
         if (point == null) return; 
 
         point.getEditorHandle().display(this);
-
 
         this.revalidate();
         this.repaint();

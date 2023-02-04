@@ -1,7 +1,7 @@
-package robotpathcreator;
+package robotpathcreator.data;
 
 import org.bananasamirite.robotmotionprofile.Waypoint;
-import robotpathcreator.renderer.PathPointEditorHandle;
+import robotpathcreator.renderer.handle.PathPointEditorHandle;
 
 // this a terrible idea; dont use generics
 public abstract class PathPoint<T extends Waypoint> {

@@ -1,7 +1,8 @@
-package robotpathcreator.renderer;
+package robotpathcreator.renderer.handle;
 
 import org.bananasamirite.robotmotionprofile.data.waypoint.CommandWaypoint;
-import robotpathcreator.CommandPathPoint;
+import robotpathcreator.data.CommandPathPoint;
+import robotpathcreator.renderer.PathPointsEditor;
 
 import javax.swing.*;
 import java.awt.event.FocusAdapter;
@@ -26,6 +27,7 @@ public class CommandPointEditorHandle extends PathPointEditorHandle<CommandWaypo
         super.update();
 
         commandNameField.setText(getWaypoint().getCommandName());
+        commandArgsField.setText(getWaypoint().getParameterString());
     }
 
     @Override
@@ -36,6 +38,13 @@ public class CommandPointEditorHandle extends PathPointEditorHandle<CommandWaypo
             @Override
             public void focusLost(FocusEvent e) {
                 getWaypoint().setCommandName(commandNameField.getText());
+            }
+        });
+
+        commandArgsField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                getWaypoint().setParameterString(commandArgsField.getText());
             }
         });
     }

@@ -1,6 +1,6 @@
 package robotpathcreator.renderer;
 
-import robotpathcreator.Coordinate;
+import robotpathcreator.data.Coordinate;
 
 import java.awt.*;
 

@@ -1,9 +1,10 @@
-package robotpathcreator.renderer;
+package robotpathcreator.renderer.handle;
 
 import org.bananasamirite.robotmotionprofile.Waypoint;
-import robotpathcreator.PathPoint;
+import robotpathcreator.data.PathPoint;
 import robotpathcreator.RobotPathCreator;
 import robotpathcreator.dialog.ConstraintsDialog;
+import robotpathcreator.renderer.PathPointsEditor;
 
 import javax.swing.*;
 import java.awt.*;

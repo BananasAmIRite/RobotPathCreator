@@ -1,4 +1,4 @@
-package robotpathcreator;
+package robotpathcreator.utils;
 
 import java.util.function.Function;
 

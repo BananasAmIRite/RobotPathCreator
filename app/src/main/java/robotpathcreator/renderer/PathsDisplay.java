@@ -7,8 +7,10 @@ import org.bananasamirite.robotmotionprofile.data.Trajectory;
 import org.bananasamirite.robotmotionprofile.data.task.CommandTask;
 import org.bananasamirite.robotmotionprofile.data.task.TrajectoryTask;
 import org.bananasamirite.robotmotionprofile.data.task.WaypointTask;
-import robotpathcreator.*;
 import robotpathcreator.Canvas;
+import robotpathcreator.data.Coordinate;
+import robotpathcreator.data.PathPoint;
+import robotpathcreator.renderer.listener.PathInteractionListener;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,18 +18,17 @@ import java.util.List;
 
 public class PathsDisplay extends Canvas {
     private Coordinate<Double> focalPoint = new Coordinate<>(0d, 0d); // in trajectory units
-    private double zoom = 10;
+    private double zoom = 50;
     private final int nodeRadius = 5;
 
     private FieldImage fieldImage; 
 
     private PathPointsList paths;
 
-    private final PathInteractionListener listener = new PathInteractionListener(this);
-
     public PathsDisplay(PathPointsList paths) {
         super();
         this.paths = paths;
+        PathInteractionListener listener = new PathInteractionListener(this);
         this.addMouseListener(listener);
         this.addKeyListener(listener);
         this.addMouseMotionListener(listener);
@@ -70,7 +71,6 @@ public class PathsDisplay extends Canvas {
         if (this.fieldImage != null) {
             Coordinate<Integer> renderStart = toCanvasCoords(this.fieldImage.getRenderStartCoordinates());
             Dimension dimensions = this.fieldImage.getImageDimensions(this.zoom);
-            System.out.println(this.fieldImage.getRenderStartCoordinates().getX());
 
             g.drawImage(this.fieldImage.getImage(),
                     renderStart.getX(),
@@ -82,43 +82,33 @@ public class PathsDisplay extends Canvas {
 
         if (this.paths == null) return;
 
-//        List<Path> trajectory = this.paths.getTrajectory().calculateTrajectory();
         List<Waypoint> w = new ArrayList<>();
         for (int i = 0; i < this.paths.getPoints().size(); i++) {
             PathPoint<?> p = this.paths.getPoints().elementAt(i);
             w.add(p.getWaypoint());
         }
         Trajectory t = Trajectory.fromWaypoint(w, new RobotConfiguration());
-        Coordinate<Double> lastCoords = null;
-        g.setColor(Color.BLACK);
-        for (TrajectoryTask task : t.getTasks()) {
+        for (int j = 0; j < t.getTasks().size(); j++) {
+            TrajectoryTask task = t.getTasks().get(j);
             if (task instanceof WaypointTask) {
                 ParametricSpline spline = ParametricSpline.fromWaypoints(((WaypointTask) task).getWaypoints());
-                for (double i = 0; i < spline.getTotalTime(); i += spline.getTotalTime() / 100) {
-                    if (lastCoords == null) {
-                        lastCoords = new Coordinate<>(spline.getXAtTime(i), spline.getYAtTime(i));
-                    } else {
-                        Coordinate<Double> curCoords = new Coordinate<>(spline.getXAtTime(i), spline.getYAtTime(i));
+                renderSpline(spline, g);
+            }
+        }
 
-                        Coordinate<Integer> curCanvasCoords = toCanvasCoords(curCoords);
-                        Coordinate<Integer> lastCanvasCoords = toCanvasCoords(lastCoords);
-
-                        lastCoords = curCoords;
-
-                        g.drawLine(lastCanvasCoords.getX(), lastCanvasCoords.getY(), curCanvasCoords.getX(), curCanvasCoords.getY());
-                    }
-                }
-            } else {
-                System.out.println(((CommandTask) task).getWaypoint().getCommandName());
-                if (lastCoords == null) {
-                    lastCoords = new Coordinate<>(((CommandTask) task).getWaypoint().getX(), ((CommandTask) task).getWaypoint().getY());
-                } else {
-                    Coordinate<Double> curCoords = new Coordinate<>(((CommandTask) task).getWaypoint().getX(), ((CommandTask) task).getWaypoint().getY());
-                    Coordinate<Integer> curCanvasCoords = toCanvasCoords(curCoords);
-                    Coordinate<Integer> lastCanvasCoords = toCanvasCoords(lastCoords);
-                    lastCoords = curCoords;
-                    g.drawLine(lastCanvasCoords.getX(), lastCanvasCoords.getY(), curCanvasCoords.getX(), curCanvasCoords.getY());
-                }
+        for (int j = 0; j < t.getTasks().size() - 1; j++) {
+            TrajectoryTask task = t.getTasks().get(j);
+            TrajectoryTask nextTask = t.getTasks().get(j+1);
+            if (task instanceof CommandTask) {
+                g.setColor(Color.BLACK);
+                Coordinate<Double> curCoords = new Coordinate<>(((CommandTask) task).getWaypoint().getX(), ((CommandTask) task).getWaypoint().getY());
+                Coordinate<Integer> curCanvasCoords = toCanvasCoords(curCoords);
+                Coordinate<Integer> nextCanvasCoords = toCanvasCoords(
+                        nextTask instanceof CommandTask ?
+                                new Coordinate<>(((CommandTask) nextTask).getWaypoint().getX(), ((CommandTask) nextTask).getWaypoint().getY()) :
+                                new Coordinate<>(((WaypointTask) nextTask).getWaypoints().get(0).getX(), ((WaypointTask) nextTask).getWaypoints().get(0).getY()));
+//                System.out.println(curCanvasCoords + " " + nextCanvasCoords);
+                g.drawLine(curCanvasCoords.getX(), curCanvasCoords.getY(), nextCanvasCoords.getX(), nextCanvasCoords.getY());
             }
         }
 
@@ -139,6 +129,43 @@ public class PathsDisplay extends Canvas {
             g.fillOval(c.getX() - this.nodeRadius, c.getY() - this.nodeRadius, this.nodeRadius*2, this.nodeRadius*2);
 
             g.setColor(Color.BLACK);
+        }
+    }
+
+    private void renderSpline(ParametricSpline spline, Graphics2D g) {
+        for (double i = 0; i < spline.getTotalTime() * 99/100; i += spline.getTotalTime() / 100) {
+            double iNext = i+spline.getTotalTime() / 100;
+
+            Coordinate<Integer> lastCanvasCoords = toCanvasCoords(new Coordinate<>(spline.getXAtTime(i), spline.getYAtTime(i)));
+            Coordinate<Integer> curCanvasCoords = toCanvasCoords(new Coordinate<>(spline.getXAtTime(iNext), spline.getYAtTime(iNext)));
+
+            double derivAngleCur = Math.atan2(spline.getDyAtTime(i), spline.getDxAtTime(i));
+            double derivAngleNext = Math.atan2(spline.getDyAtTime(iNext), spline.getDxAtTime(iNext));
+
+            Coordinate<Integer> curBoundaryPoint1 = toCanvasCoords(new Coordinate<>(
+                    spline.getXAtTime(i) + paths.getTrajectory().getConfig().getDimensionY() / 2 * Math.cos(derivAngleCur + Math.PI/2),
+                    spline.getYAtTime(i) + paths.getTrajectory().getConfig().getDimensionY() / 2 * Math.sin(derivAngleCur + Math.PI/2)
+            ));
+            Coordinate<Integer> curBoundaryPoint2 = toCanvasCoords(new Coordinate<>(
+                    spline.getXAtTime(i) + paths.getTrajectory().getConfig().getDimensionY() / 2 * Math.cos(derivAngleCur - Math.PI/2),
+                    spline.getYAtTime(i) + paths.getTrajectory().getConfig().getDimensionY() / 2 * Math.sin(derivAngleCur - Math.PI/2)
+            ));
+
+            Coordinate<Integer> nextBoundaryPoint1 = toCanvasCoords(new Coordinate<>(
+                    spline.getXAtTime(iNext) + paths.getTrajectory().getConfig().getDimensionY() / 2 * Math.cos(derivAngleNext + Math.PI/2),
+                    spline.getYAtTime(iNext) + paths.getTrajectory().getConfig().getDimensionY() / 2 * Math.sin(derivAngleNext + Math.PI/2)
+            ));
+
+            Coordinate<Integer> nextBoundaryPoint2 = toCanvasCoords(new Coordinate<>(
+                    spline.getXAtTime(iNext) + paths.getTrajectory().getConfig().getDimensionY() / 2 * Math.cos(derivAngleNext - Math.PI/2),
+                    spline.getYAtTime(iNext) + paths.getTrajectory().getConfig().getDimensionY() / 2 * Math.sin(derivAngleNext - Math.PI/2)
+            ));
+
+            g.setColor(Color.BLACK);
+            g.drawLine(lastCanvasCoords.getX(), lastCanvasCoords.getY(), curCanvasCoords.getX(), curCanvasCoords.getY());
+            g.setColor(Color.BLUE);
+            g.drawLine(curBoundaryPoint1.getX(), curBoundaryPoint1.getY(), nextBoundaryPoint1.getX(), nextBoundaryPoint1.getY());
+            g.drawLine(curBoundaryPoint2.getX(), curBoundaryPoint2.getY(), nextBoundaryPoint2.getX(), nextBoundaryPoint2.getY());
         }
     }
 

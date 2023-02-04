@@ -1,5 +1,7 @@
 package robotpathcreator;
 
+import robotpathcreator.data.RobotTrajectory;
+import robotpathcreator.dialog.RobotConfigDialog;
 import robotpathcreator.renderer.*;
 
 import javax.imageio.ImageIO;
@@ -19,16 +21,16 @@ public class RobotPathCreator extends JFrame {
 
     private static RobotPathCreator instance;
 
-    public RobotPathCreator() throws URISyntaxException, IOException {
+    public RobotPathCreator() throws IOException {
         RobotPathCreator.instance = this;
 
-        BufferedImage image = ImageIO.read(new File(FieldImage.class.getResource("/field_image.png").toURI()));
+        BufferedImage image = ImageIO.read(FieldImage.class.getResourceAsStream("/field_image.png"));
 
         FieldImage fImage = new FieldImage(image,
                 63,
                 image.getWidth(), image.getHeight(),
-46, 36
-//                521, 252
+//46, 36
+                521, 252
         );
         display.setFieldImage(fImage); 
 
@@ -56,27 +58,62 @@ public class RobotPathCreator extends JFrame {
             });
             fc.setMultiSelectionEnabled(false);
             fc.addActionListener(a -> {
-                if (a.getActionCommand().equals("ApproveSelection")) this.list.setTrajectory(RobotTrajectory.importTrajectory(this, fc.getSelectedFile()));
+                if (a.getActionCommand().equals("ApproveSelection")) {
+                    try {
+                        this.list.setTrajectory(RobotTrajectory.importTrajectory(this, fc.getSelectedFile()));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
             });
             fc.showOpenDialog(this);
         });
         JMenuItem exp = new JMenuItem("Export");
         exp.addActionListener(e -> {
             // export files
+            JFileChooser fc = new JFileChooser();
+            fc.setFileFilter(new FileFilter() {
+                @Override
+                public boolean accept(File f) {
+                    return f.getName().toLowerCase().endsWith(".json");
+                }
+
+                @Override
+                public String getDescription() {
+                    return "JSON (.json)";
+                }
+            });
+            fc.setMultiSelectionEnabled(false);
+            fc.addActionListener(a -> {
+                if (a.getActionCommand().equals("ApproveSelection")) {
+                    try {
+                        this.list.getTrajectory().toJsonFile(fc.getSelectedFile());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            });
+            fc.showSaveDialog(this);
         });
         file.add(imp);
         file.add(exp);
         t.add(file);
-        JMenuItem add = new JMenuItem("Add Point");
-        add.addActionListener(e -> {
-            // add point
+        JMenuItem addNew = new JMenuItem("New");
+        addNew.addActionListener(e -> this.list.setTrajectory(new RobotTrajectory(this)));
+        JMenu project = new JMenu("Project");
+        JMenuItem configItem = new JMenuItem("Configuration");
+        configItem.addActionListener(e -> {
+            RobotConfigDialog d = new RobotConfigDialog(this, this.list.getTrajectory().getConfig(), config -> this.list.getTrajectory().setConfig(config));
+            d.setVisible(true);
         });
-        t.add(add);
+        project.add(addNew);
+        project.add(configItem);
+        t.add(project);
 
         setJMenuBar(t);
         JPanel controls = new JPanel();
         controls.setLayout(new GridLayout(1, 2));
-        controls.add(new PathPointsListEditor(this, list));
+        controls.add(new PathPointsListEditor(list));
         controls.add(editor);
 
 
@@ -92,6 +129,10 @@ public class RobotPathCreator extends JFrame {
 
     public PathsDisplay getDisplay() {
         return display;
+    }
+
+    public PathPointsList getList() {
+        return list;
     }
 
     public static RobotPathCreator getInstance() {

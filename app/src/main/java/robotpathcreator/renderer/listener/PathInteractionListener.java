@@ -1,7 +1,8 @@
-package robotpathcreator.renderer;
+package robotpathcreator.renderer.listener;
 
-import robotpathcreator.Coordinate;
-import robotpathcreator.PathPoint;
+import robotpathcreator.data.Coordinate;
+import robotpathcreator.data.PathPoint;
+import robotpathcreator.renderer.PathsDisplay;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -29,6 +30,12 @@ public class PathInteractionListener  extends MouseDragListener implements Mouse
             Coordinate<Integer> cnvPos = display.toCanvasCoords(this.display.getPathsList().getSelectedValue().getWeightCoordinates());
             if (isInRange(e.getX(), e.getY(), cnvPos.getX(), cnvPos.getY(), display.getNodeRadius())) {
                 this.controllingElement = new ControllingElement(ElementType.VELOCITY, this.display.getPathsList().getSelectedValue());
+                display.update();
+                return;
+            }
+            Coordinate<Integer> canvasPosition = display.toCanvasCoords(this.display.getPathsList().getSelectedValue().getPosition());
+            if (isInRange(e.getX(), e.getY(), canvasPosition.getX(), canvasPosition.getY(), display.getNodeRadius())) {
+                this.controllingElement = new ControllingElement(ElementType.POINT, this.display.getPathsList().getSelectedValue());
                 display.update();
                 return;
             }
