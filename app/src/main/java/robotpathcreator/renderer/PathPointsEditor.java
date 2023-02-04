@@ -4,11 +4,10 @@ import robotpathcreator.PathPoint;
 import robotpathcreator.RobotPathCreator;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 
 public class PathPointsEditor extends JPanel {
-    private PathPoint currentPoint;
+    private PathPoint<?> currentPoint;
 
     private final RobotPathCreator pathCreator;
 
@@ -19,22 +18,30 @@ public class PathPointsEditor extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 grabFocus();
+                pathCreator.getDisplay().update();
+            }
+        });
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                pathCreator.getDisplay().update();
             }
         });
     }
 
-    public void setCurrentPoint(PathPoint point) {
+    public void setCurrentPoint(PathPoint<?> point) {
         this.removeAll(); 
         this.currentPoint = point;
         if (point == null) return; 
 
-        point.getEditorHandle().display(this); 
+        point.getEditorHandle().display(this);
+
 
         this.revalidate();
         this.repaint();
     }
 
-    public PathPoint getCurrentPoint() {
+    public PathPoint<?> getCurrentPoint() {
         return this.currentPoint;
     }
 }

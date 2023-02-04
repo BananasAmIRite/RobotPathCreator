@@ -1,13 +1,19 @@
+package robotpathcreator.renderer;
+
+import robotpathcreator.Coordinate;
+
+import java.awt.*;
+
 public class FieldImage {
-    private Image img; 
+    private final Image img;
 
-    private double pixelsPerMeter; 
+    private final double pixelsPerMeter;
 
-    private double sizeX; 
-    private double sizeY; 
+    private final double sizeX;
+    private final double sizeY;
     
-    private double originX; 
-    private double originY; 
+    private final double originX;
+    private final double originY;
     public FieldImage(Image img, double pixelsPerMeter, double sizeX, double sizeY, double originX, double originY) {
         this.img = img; 
         this.pixelsPerMeter = pixelsPerMeter; 
@@ -21,14 +27,14 @@ public class FieldImage {
         return img; 
     }
 
-    public Coordinate<Integer> getRenderStartCoordinates(double scale) {
-        int startX = (int) (-originX / pixelsPerMeter * scale); 
-        int startY = (int) (-originY / pixelsPerMeter * scale); 
+    public Coordinate<Double> getRenderStartCoordinates() {
+        double startX = -originX / pixelsPerMeter;
+        double startY = originY / pixelsPerMeter;
 
-        return new Coordinate<Integer>(startX, startY); 
+        return new Coordinate<>(startX, startY);
     }
 
     public Dimension getImageDimensions(double scale) {
-        return new Dimension(sizeX / pixelsPerMeter * scale, sizeY / pixelsPerMeter * scale); 
+        return new Dimension((int) (sizeX / pixelsPerMeter * scale), (int) (sizeY / pixelsPerMeter * scale));
     }
 }

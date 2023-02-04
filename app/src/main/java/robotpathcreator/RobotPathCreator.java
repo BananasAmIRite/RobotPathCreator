@@ -1,13 +1,15 @@
 package robotpathcreator;
 
-import robotpathcreator.renderer.PathPointsEditor;
-import robotpathcreator.renderer.PathPointsList;
-import robotpathcreator.renderer.PathsDisplay;
+import robotpathcreator.renderer.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class RobotPathCreator extends JFrame {
 
@@ -15,15 +17,19 @@ public class RobotPathCreator extends JFrame {
     private final PathPointsList list = new PathPointsList(this);
     private final PathsDisplay display = new PathsDisplay(this.list);
 
-    public RobotPathCreator() {
+    private static RobotPathCreator instance;
 
-        BufferedImage image = ImageIO.read(new File(FieldImage.class.getResource("/field_image.png"))); 
+    public RobotPathCreator() throws URISyntaxException, IOException {
+        RobotPathCreator.instance = this;
 
-        FieldImage fImage = new FieldImage(image, 
-            pixelsPerMeter, 
-            image.getWidth(), image.getHeight(), 
-            originX, originY
-        ); 
+        BufferedImage image = ImageIO.read(new File(FieldImage.class.getResource("/field_image.png").toURI()));
+
+        FieldImage fImage = new FieldImage(image,
+                63,
+                image.getWidth(), image.getHeight(),
+46, 36
+//                521, 252
+        );
         display.setFieldImage(fImage); 
 
         list.addListSelectionListener(e -> {
@@ -70,7 +76,7 @@ public class RobotPathCreator extends JFrame {
         setJMenuBar(t);
         JPanel controls = new JPanel();
         controls.setLayout(new GridLayout(1, 2));
-        controls.add(list);
+        controls.add(new PathPointsListEditor(this, list));
         controls.add(editor);
 
 
@@ -86,5 +92,9 @@ public class RobotPathCreator extends JFrame {
 
     public PathsDisplay getDisplay() {
         return display;
+    }
+
+    public static RobotPathCreator getInstance() {
+        return instance;
     }
 }

@@ -1,43 +1,41 @@
 package robotpathcreator;
 
+import org.bananasamirite.robotmotionprofile.TankMotionProfile;
+import org.bananasamirite.robotmotionprofile.data.waypoint.CommandWaypoint;
+import org.bananasamirite.robotmotionprofile.data.waypoint.SplineWaypoint;
+
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RobotTrajectory {
-    private final DefaultListModel<PathPoint> points = new DefaultListModel<>();
+    private final DefaultListModel<PathPoint<?>> points = new DefaultListModel<>();
 
     private final RobotPathCreator pathCreator;
 
     public RobotTrajectory(RobotPathCreator pathCreator) {
         this.pathCreator = pathCreator;
-        this.addPoint(new SplinePathPoint("Point 1", 0,0, 0, 10, 5));
-        this.addPoint(new CommandPathPoint("Point 2", 5, 4, 0, 10, 1, "CoolCommand"));
+        SplineWaypoint w = new SplineWaypoint(0,0, 0, 1, 5, new TankMotionProfile.TankMotionProfileConstraints(0, 0));
+        w.setName("Point 1");
+        this.addPoint(new SplinePathPoint(w));
+        this.addPoint(new CommandPathPoint(new CommandWaypoint("Point 2", 0, 4, 0, 2, 1, new TankMotionProfile.TankMotionProfileConstraints(0, 0), "CoolCommand")));
     }
 
-    private RobotTrajectory(RobotPathCreator pathCreator, List<PathPoint> points) {
+    private RobotTrajectory(RobotPathCreator pathCreator, List<PathPoint<?>> points) {
         this.pathCreator = pathCreator;
-        for (PathPoint p : points) this.addPoint(p);
+        for (PathPoint<?> p : points) this.addPoint(p);
     }
 
-    public void addPoint(PathPoint p) {
+    public void addPoint(PathPoint<?> p) {
         this.points.addElement(p);
+        if (this.pathCreator.getDisplay() != null) pathCreator.getDisplay().update();
     }
 
     // public void addPoint(String name, double x, double y, double angle, double velocity, double travelTime) {
     //     this.points.addElement(new SplinePathPoint(name, x, y, angle, velocity, travelTime));
     // }
-
-    public List<Path> calculateTrajectory() {
-        List<Path> paths = new ArrayList<>(); 
-        for (int i = 0; i < points.size() - 1; i++) {
-            paths.add(new Path(points.get(i), points.get(i+1))); 
-        }
-        return paths; 
-    }
-
-    public DefaultListModel<PathPoint> getPoints() {
+    public DefaultListModel<PathPoint<?>> getPoints() {
         return points;
     }
 

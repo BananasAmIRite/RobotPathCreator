@@ -1,12 +1,13 @@
 package robotpathcreator.renderer;
 
-import robotpathcreator.PathPoint;
-import robotpathcreator.RobotPathCreator;
-import robotpathcreator.RobotTrajectory;
+import org.bananasamirite.robotmotionprofile.TankMotionProfile;
+import org.bananasamirite.robotmotionprofile.data.waypoint.CommandWaypoint;
+import org.bananasamirite.robotmotionprofile.data.waypoint.SplineWaypoint;
+import robotpathcreator.*;
 
 import javax.swing.*;
 
-public class PathPointsList extends JList<PathPoint> {
+public class PathPointsList extends JList<PathPoint<?>> {
     private RobotTrajectory trajectory;
 
     private final RobotPathCreator pathCreator;
@@ -17,11 +18,18 @@ public class PathPointsList extends JList<PathPoint> {
         this.setModel(getPoints());
     }
 
-    public void addPoint(String name, double x, double y, double angle, double velocity, double travelTime) {
-        this.trajectory.addPoint(name, x, y, angle, velocity, travelTime);
+    public void addSplinePoint(String name, double x, double y, double angle, double weight, double runTime, TankMotionProfile.TankMotionProfileConstraints constraints) {
+        SplineWaypoint w = new SplineWaypoint(x, y, angle, weight, runTime, constraints);
+        w.setName(name);
+        this.trajectory.addPoint(new SplinePathPoint(w));
     }
 
-    public DefaultListModel<PathPoint> getPoints() {
+    public void addCommandPoint(String name, double x, double y, double angle, double weight, double runTime, TankMotionProfile.TankMotionProfileConstraints constraints, String commandName) {
+        CommandWaypoint w = new CommandWaypoint(name, x, y, angle, weight, runTime, constraints, "");
+        this.trajectory.addPoint(new CommandPathPoint(w));
+    }
+
+    public DefaultListModel<PathPoint<?>> getPoints() {
         return trajectory.getPoints();
     }
 

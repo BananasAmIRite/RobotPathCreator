@@ -1,10 +1,11 @@
 package robotpathcreator;
 
-import robotpathcreator.renderer.PathPointsEditor;
+import org.bananasamirite.robotmotionprofile.data.waypoint.SplineWaypoint;
+import robotpathcreator.renderer.WaypointEditorHandle;
 
-public class SplinePathPoint extends PathPoint {
+public class SplinePathPoint extends PathPoint<SplineWaypoint> {
     // SplinePathPoint(SplineWaypoint); 
-    public SplinePathPoint(String name, double x, double y, double angle, double velocity, double travelTime) {
-        super(name, x, y, angle, velocity, new WaypointEditorHandle()); 
+    public SplinePathPoint(SplineWaypoint waypoint) {
+        super(waypoint, new WaypointEditorHandle());
     }
 }

@@ -1,23 +1,31 @@
-import robotpathcreator.PathPoint;
+package robotpathcreator.renderer;
 
-public class PathPointEditorHandle {
+import org.bananasamirite.robotmotionprofile.Waypoint;
+import robotpathcreator.PathPoint;
+import robotpathcreator.RobotPathCreator;
+import robotpathcreator.dialog.ConstraintsDialog;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
+public class PathPointEditorHandle<G extends Waypoint, T extends PathPoint<G>> {
 
     private final JTextField nameField = new JTextField();
     private final JTextField posXField = new JTextField();
     private final JTextField posYField = new JTextField();
     private final JTextField timeField = new JTextField();
-    private final JTextField velocityField = new JTextField();
+    private final JTextField weightField = new JTextField();
     private final JTextField angleField = new JTextField();
+    private final JButton constraintEditBtn = new JButton("Edit");
 
-    private final PathPoint waypoint; 
+    private PathPoint<G> waypoint;
 
-    public PathPointEditorHandle(PathPoint waypoint) {
-        this.waypoint = waypoint; 
-    }
 
     public void display(PathPointsEditor editor) {
-        addFeatures(editor); 
-
+        update();
+        addFeatures(editor);
     }
 
     protected void addFeatures(PathPointsEditor editor) {
@@ -35,68 +43,77 @@ public class PathPointEditorHandle {
         editor.add(new JLabel("Position Y: "));
         editor.add(this.posYField);
 
-        editor.add(new JLabel("Velocity: "));
-        editor.add(this.velocityField);
+        editor.add(new JLabel("Weight: "));
+        editor.add(this.weightField);
 
         editor.add(new JLabel("Angle: "));
         editor.add(this.angleField);
+
+        editor.add(new JLabel("Robot Constraints: "));
+        editor.add(constraintEditBtn);
     }
 
     public void update() {
-        this.nameField.setText(currentPoint.getName());
-        this.posXField.setText(Double.toString(currentPoint.getX()));
-        this.posYField.setText(Double.toString(currentPoint.getY()));
-        this.timeField.setText(Double.toString(currentPoint.getTravelTime()));
-        this.velocityField.setText(Double.toString(currentPoint.getVelocity()));
-        this.angleField.setText(Double.toString(Math.toDegrees(currentPoint.getAngle()))); // IMPORTANT: displayed is degrees, stored is radians
+        this.nameField.setText(waypoint.getName());
+        this.posXField.setText(Double.toString(waypoint.getX()));
+        this.posYField.setText(Double.toString(waypoint.getY()));
+        this.timeField.setText(Double.toString(waypoint.getTravelTime()));
+        this.weightField.setText(Double.toString(waypoint.getWeight()));
+        this.angleField.setText(Double.toString(Math.toDegrees(waypoint.getAngle()))); // IMPORTANT: displayed is degrees, stored is radians
     }
 
     protected void configureFocus() {
         this.nameField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                point.setName(nameField.getText());
+                waypoint.setName(nameField.getText());
             }
         });
 
         this.posXField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                point.setX(Double.parseDouble(posXField.getText()));
+                waypoint.setX(Double.parseDouble(posXField.getText()));
             }
         });
 
         this.posYField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                point.setY(Double.parseDouble(posYField.getText()));
+                waypoint.setY(Double.parseDouble(posYField.getText()));
             }
         });
 
         this.timeField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                point.setTravelTime(Double.parseDouble(timeField.getText()));
+                waypoint.setTravelTime(Double.parseDouble(timeField.getText()));
             }
         });
 
-        this.velocityField.addFocusListener(new FocusAdapter() {
+        this.weightField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                point.setVelocity(Double.parseDouble(velocityField.getText()));
+                waypoint.setWeight(Double.parseDouble(weightField.getText()));
             }
         });
 
         this.angleField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                point.setAngle(Math.toRadians(Double.parseDouble(angleField.getText())));
+                waypoint.setAngle(Math.toRadians(Double.parseDouble(angleField.getText())));
             }
         });
+
+        this.constraintEditBtn.addActionListener(e -> new ConstraintsDialog(RobotPathCreator.getInstance(), waypoint.getMaxVelocity(), waypoint.getMaxAcceleration(), a -> waypoint.setMaxVelocity(a), a -> waypoint.setMaxAcceleration(a)).setVisible(true));
     }
 
-    public void configureHandleOwner(PathPoint p) {
+    public void configureHandleOwner(PathPoint<G> p) {
         this.waypoint = p;
         configureFocus();  
+    }
+
+    public T getWaypoint() {
+        return (T) waypoint;
     }
 }

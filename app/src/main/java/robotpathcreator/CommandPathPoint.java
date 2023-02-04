@@ -1,11 +1,19 @@
 package robotpathcreator;
 
-import robotpathcreator.renderer.PathPointsEditor;
+import org.bananasamirite.robotmotionprofile.data.waypoint.CommandWaypoint;
 import robotpathcreator.renderer.CommandPointEditorHandle;
 
-public class CommandPathPoint extends PathPoint {
+public class CommandPathPoint extends PathPoint<CommandWaypoint> {
     // CommandPathPoint(CommandWaypoint); 
-    public CommandPathPoint(String name, double x, double y, double angle, double velocity, double travelTime) {
-        super(name, x, y, angle, velocity, new CommandPointEditorHandle()); 
+    public CommandPathPoint(CommandWaypoint waypoint) {
+        super(waypoint, new CommandPointEditorHandle());
+    }
+
+    public String getCommandName() {
+        return getWaypoint().getCommandName();
+    }
+
+    public void setCommandName(String name) {
+        getWaypoint().setCommandName(name);
     }
 }
