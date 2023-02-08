@@ -15,8 +15,8 @@ public class PathPointsList extends JList<PathPoint<?>> {
         this.setModel(getPoints());
     }
 
-    public void addSplinePoint(String name, double x, double y, double angle, double weight, double runTime, TankMotionProfile.TankMotionProfileConstraints constraints) {
-        this.trajectory.addSplinePoint(name, x, y, angle, weight, runTime, constraints);
+    public void addSplinePoint(String name, double x, double y, double angle, double weight, double runTime, boolean reversed, TankMotionProfile.TankMotionProfileConstraints constraints) {
+        this.trajectory.addSplinePoint(name, x, y, angle, weight, runTime, reversed, constraints);
     }
 
     public void addCommandPoint(String name, double x, double y, double angle, double weight, double runTime, TankMotionProfile.TankMotionProfileConstraints constraints, String commandName) {

@@ -8,4 +8,12 @@ public class SplinePathPoint extends PathPoint<SplineWaypoint> {
     public SplinePathPoint(SplineWaypoint waypoint) {
         super(waypoint, new WaypointEditorHandle());
     }
+
+    public boolean isReversed() {
+        return getWaypoint().isReversed();
+    }
+
+    public void setReversed(boolean reversed) {
+        getWaypoint().setReversed(reversed);
+    }
 }

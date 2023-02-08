@@ -2,6 +2,7 @@ package robotpathcreator.renderer;
 
 import org.bananasamirite.robotmotionprofile.TankMotionProfile;
 import robotpathcreator.data.PathPoint;
+import robotpathcreator.data.SplinePathPoint;
 
 import javax.swing.*;
 
@@ -51,16 +52,17 @@ public class PathPointsListEditor extends JPanel {
 
         addSplinePoint.addActionListener(e -> {
             PathPoint<?> lastPoint = this.list.getTrajectory().getPoints().lastElement();
-            this.list.addSplinePoint("Untitled Waypoint", (lastPoint.getX() + lastPoint.getWeightTranslationX() * 1.5),
-                    (lastPoint.getY() + lastPoint.getWeightTranslationY() * 1.5),
-                    lastPoint.getAngle(), lastPoint.getWeightTranslationX(), 1, new TankMotionProfile.TankMotionProfileConstraints(0, 0));
+            this.list.addSplinePoint("Untitled Waypoint",
+                    (lastPoint.getX() + lastPoint.getWeightTranslationX() * 1.5 * (lastPoint instanceof SplinePathPoint && ((SplinePathPoint) lastPoint).isReversed() ? -1 : 1)),
+                    (lastPoint.getY() + lastPoint.getWeightTranslationY() * 1.5 * (lastPoint instanceof SplinePathPoint && ((SplinePathPoint) lastPoint).isReversed() ? -1 : 1)),
+                    lastPoint.getAngle(), lastPoint.getWeightTranslationX(), 1, lastPoint instanceof SplinePathPoint && ((SplinePathPoint) lastPoint).isReversed(), new TankMotionProfile.TankMotionProfileConstraints(0, 0));
         });
 
         addCommandPoint.addActionListener(e -> {
             PathPoint<?> lastPoint = this.list.getTrajectory().getPoints().lastElement();
             this.list.addCommandPoint("Untitled Command",
-                    (lastPoint.getX() + lastPoint.getWeightTranslationX() * 1.5),
-                    (lastPoint.getY() + lastPoint.getWeightTranslationY() * 1.5),
+                    (lastPoint.getX() + lastPoint.getWeightTranslationX() * 1.5 * (lastPoint instanceof SplinePathPoint && ((SplinePathPoint) lastPoint).isReversed() ? -1 : 1)),
+                    (lastPoint.getY() + lastPoint.getWeightTranslationY() * 1.5 * (lastPoint instanceof SplinePathPoint && ((SplinePathPoint) lastPoint).isReversed() ? -1 : 1)),
                     lastPoint.getAngle(), lastPoint.getWeightTranslationX(), 1.0, new TankMotionProfile.TankMotionProfileConstraints(0, 0), "");
         });
 

@@ -25,7 +25,7 @@ public class RobotTrajectory {
 
     public RobotTrajectory(RobotPathCreator pathCreator) {
         this.pathCreator = pathCreator;
-        addSplinePoint("Untitled Point", 0,0, 0, 1, 1, new TankMotionProfile.TankMotionProfileConstraints(0, 0));
+        addSplinePoint("Untitled Point", 0,0, 0, 1, 1, false, new TankMotionProfile.TankMotionProfileConstraints(0, 0));
     }
 
     private RobotTrajectory(RobotPathCreator pathCreator, List<PathPoint<?>> points, RobotConfiguration config) {
@@ -39,8 +39,8 @@ public class RobotTrajectory {
         if (this.pathCreator.getDisplay() != null) pathCreator.getDisplay().update();
     }
 
-    public void addSplinePoint(String name, double x, double y, double angle, double weight, double runTime, TankMotionProfile.TankMotionProfileConstraints constraints) {
-        SplineWaypoint w = new SplineWaypoint(x, y, angle, weight, runTime, constraints);
+    public void addSplinePoint(String name, double x, double y, double angle, double weight, double runTime, boolean reversed, TankMotionProfile.TankMotionProfileConstraints constraints) {
+        SplineWaypoint w = new SplineWaypoint(x, y, angle, weight, runTime, constraints, reversed);
         w.setName(name);
         this.addPoint(new SplinePathPoint(w));
     }

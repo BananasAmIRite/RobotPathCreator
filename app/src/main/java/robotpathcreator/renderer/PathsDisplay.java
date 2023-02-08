@@ -91,8 +91,7 @@ public class PathsDisplay extends Canvas {
         for (int j = 0; j < t.getTasks().size(); j++) {
             TrajectoryTask task = t.getTasks().get(j);
             if (task instanceof WaypointTask) {
-                ParametricSpline spline = ParametricSpline.fromWaypoints(((WaypointTask) task).getWaypoints());
-                renderSpline(spline, g);
+                renderSpline(((WaypointTask) task).getSpline(), g);
             }
         }
 
