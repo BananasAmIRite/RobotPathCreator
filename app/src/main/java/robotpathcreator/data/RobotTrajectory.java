@@ -90,4 +90,8 @@ public class RobotTrajectory {
     public void toJsonFile(File f) throws IOException {
         toTrajectory().toJsonFile(f);
     }
+
+    public RobotPathCreator getPathCreator() {
+        return pathCreator;
+    }
 }

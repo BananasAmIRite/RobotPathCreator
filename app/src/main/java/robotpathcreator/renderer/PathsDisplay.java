@@ -25,6 +25,8 @@ public class PathsDisplay extends Canvas {
 
     private PathPointsList paths;
 
+    private boolean showOutline = false;
+
     public PathsDisplay(PathPointsList paths) {
         super();
         this.paths = paths;
@@ -82,15 +84,12 @@ public class PathsDisplay extends Canvas {
 
         if (this.paths == null) return;
 
-        List<Waypoint> w = new ArrayList<>();
-        for (int i = 0; i < this.paths.getPoints().size(); i++) {
-            PathPoint<?> p = this.paths.getPoints().elementAt(i);
-            w.add(p.getWaypoint());
-        }
-        Trajectory t = Trajectory.fromWaypoint(w, new RobotConfiguration());
+        List<Waypoint> w = this.paths.getWaypoints();
+
+        Trajectory t = Trajectory.fromWaypoint(w, paths.getTrajectory().getConfig());
         for (int j = 0; j < t.getTasks().size(); j++) {
             TrajectoryTask task = t.getTasks().get(j);
-            if (task instanceof WaypointTask) {
+            if (task instanceof WaypointTask && ((WaypointTask) task).getWaypoints().size() > 1) {
                 renderSpline(((WaypointTask) task).getSpline(), g);
             }
         }
@@ -116,7 +115,6 @@ public class PathsDisplay extends Canvas {
 
             Coordinate<Integer> c = toCanvasCoords(p.getPosition());
 
-
             if (this.getPathsList().getSelectedValue() == p) {
                 g.setColor(Color.GRAY);
                 Coordinate<Integer> velocityCnvPoint = toCanvasCoords(p.getWeightCoordinates());
@@ -128,6 +126,16 @@ public class PathsDisplay extends Canvas {
             g.fillOval(c.getX() - this.nodeRadius, c.getY() - this.nodeRadius, this.nodeRadius*2, this.nodeRadius*2);
 
             g.setColor(Color.BLACK);
+        }
+
+        if (showOutline && this.paths.getSelectedValue() != null) {
+            g.setColor(Color.ORANGE);
+            Coordinate<Integer> renderSelected = toCanvasCoords(this.paths.getSelectedValue().getPosition());
+            g.rotate(-this.paths.getSelectedValue().getAngle(), renderSelected.getX(), renderSelected.getY());
+            int dimX = toCanvasValue(this.paths.getTrajectory().getConfig().getDimensionX());
+            int dimY = toCanvasValue(this.paths.getTrajectory().getConfig().getDimensionY());
+            g.drawRect(-dimX / 2 + renderSelected.getX(), -dimY / 2 + renderSelected.getY(), dimX, dimY);
+            g.rotate(this.paths.getSelectedValue().getAngle(), renderSelected.getX(), renderSelected.getY());
         }
     }
 
@@ -162,9 +170,11 @@ public class PathsDisplay extends Canvas {
 
             g.setColor(Color.BLACK);
             g.drawLine(lastCanvasCoords.getX(), lastCanvasCoords.getY(), curCanvasCoords.getX(), curCanvasCoords.getY());
-            g.setColor(Color.BLUE);
-            g.drawLine(curBoundaryPoint1.getX(), curBoundaryPoint1.getY(), nextBoundaryPoint1.getX(), nextBoundaryPoint1.getY());
-            g.drawLine(curBoundaryPoint2.getX(), curBoundaryPoint2.getY(), nextBoundaryPoint2.getX(), nextBoundaryPoint2.getY());
+            if (showOutline) {
+                g.setColor(Color.BLUE);
+                g.drawLine(curBoundaryPoint1.getX(), curBoundaryPoint1.getY(), nextBoundaryPoint1.getX(), nextBoundaryPoint1.getY());
+                g.drawLine(curBoundaryPoint2.getX(), curBoundaryPoint2.getY(), nextBoundaryPoint2.getX(), nextBoundaryPoint2.getY());
+            }
         }
     }
 
@@ -186,6 +196,10 @@ public class PathsDisplay extends Canvas {
         );
     }
 
+    public int toCanvasValue(double val) {
+        return (int) (this.zoom * val);
+    }
+
     public double fromCanvasValueX(double val) {
         return val / this.zoom;
     }
@@ -196,5 +210,14 @@ public class PathsDisplay extends Canvas {
 
     public void setFieldImage(FieldImage image) {
         this.fieldImage = image; 
+    }
+
+    public void setShowOutline(boolean showOutline) {
+        this.showOutline = showOutline;
+        this.update();
+    }
+
+    public boolean getShowOutline() {
+        return this.showOutline;
     }
 }

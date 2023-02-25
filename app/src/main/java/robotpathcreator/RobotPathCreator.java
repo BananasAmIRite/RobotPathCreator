@@ -3,6 +3,7 @@ package robotpathcreator;
 import robotpathcreator.data.RobotTrajectory;
 import robotpathcreator.dialog.RobotConfigDialog;
 import robotpathcreator.renderer.*;
+import robotpathcreator.time.TimeUpdateThread;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,7 +12,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 public class RobotPathCreator extends JFrame {
 
@@ -21,8 +21,11 @@ public class RobotPathCreator extends JFrame {
 
     private static RobotPathCreator instance;
 
+    private final JLabel footer;
+
     public RobotPathCreator() throws IOException {
         RobotPathCreator.instance = this;
+        this.footer = new JLabel();
 
         BufferedImage image = ImageIO.read(FieldImage.class.getResourceAsStream("/field_image.png"));
 
@@ -109,6 +112,12 @@ public class RobotPathCreator extends JFrame {
         project.add(addNew);
         project.add(configItem);
         t.add(project);
+        JMenu options = new JMenu("Options");
+        JCheckBoxMenuItem showOutline = new JCheckBoxMenuItem("Show Outline");
+        showOutline.addActionListener(a -> this.display.setShowOutline(showOutline.isSelected()));
+        showOutline.setSelected(this.display.getShowOutline());
+        options.add(showOutline);
+        t.add(options);
 
         setJMenuBar(t);
         JPanel controls = new JPanel();
@@ -116,9 +125,11 @@ public class RobotPathCreator extends JFrame {
         controls.add(new PathPointsListEditor(list));
         controls.add(editor);
 
+        new TimeUpdateThread(this, 1000).start();
 
         JSplitPane ui = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.display, controls);
-        setContentPane(ui);
+        getContentPane().add(ui, BorderLayout.CENTER);
+        getContentPane().add(footer, BorderLayout.PAGE_END);
         ui.setResizeWeight(0.75);
         pack();
     }
@@ -133,6 +144,10 @@ public class RobotPathCreator extends JFrame {
 
     public PathPointsList getList() {
         return list;
+    }
+
+    public void setFooter(String t) {
+        this.footer.setText(t);
     }
 
     public static RobotPathCreator getInstance() {

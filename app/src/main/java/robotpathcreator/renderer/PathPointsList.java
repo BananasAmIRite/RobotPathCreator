@@ -1,11 +1,14 @@
 package robotpathcreator.renderer;
 
 import org.bananasamirite.robotmotionprofile.TankMotionProfile;
+import org.bananasamirite.robotmotionprofile.Waypoint;
 import robotpathcreator.*;
 import robotpathcreator.data.PathPoint;
 import robotpathcreator.data.RobotTrajectory;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PathPointsList extends JList<PathPoint<?>> {
     private RobotTrajectory trajectory;
@@ -25,6 +28,15 @@ public class PathPointsList extends JList<PathPoint<?>> {
 
     public DefaultListModel<PathPoint<?>> getPoints() {
         return trajectory.getPoints();
+    }
+
+    public List<Waypoint> getWaypoints() {
+        List<Waypoint> w = new ArrayList<>();
+        for (int i = 0; i < this.getPoints().size(); i++) {
+            PathPoint<?> p = this.getPoints().elementAt(i);
+            w.add(p.getWaypoint());
+        }
+        return w;
     }
 
     public void setTrajectory(RobotTrajectory trajectory) {
