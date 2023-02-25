@@ -32,8 +32,8 @@ public class RobotPathCreator extends JFrame {
         FieldImage fImage = new FieldImage(image,
                 63,
                 image.getWidth(), image.getHeight(),
-//46, 36
-                521, 252
+                46, 36
+//                 521, 252
         );
         display.setFieldImage(fImage); 
 
